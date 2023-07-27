@@ -6,7 +6,8 @@
     <arg name="max_y" value="1000.0"/>
     <arg name="min_z" value="-10.0"/>
     <arg name="max_z" value="50.0"/>
-    <arg name="filter_leaf_size" value="0.15"/>
+    <arg name="filter_leaf_size" value="0.1"/>
+    <arg name="merged_pcd_name" value="bamboo_full_XYZ_0_15.pcd"/>
 
     <node pkg="pcd_manage" type="pcd_merge_node" name="pcd_merge_node" output="screen">
         <param name="min_x" type="double" value="$(arg min_x)"/>
@@ -16,7 +17,7 @@
         <param name="min_z" type="double" value="$(arg min_z)"/>
         <param name="max_z" type="double" value="$(arg max_z)"/>
         <param name="filter_leaf_size" type="double" value="$(arg filter_leaf_size)"/>
-        <param name="merged_pcd_name" value="bamboo_full_XYZ_0_15.pcd"/>
+        <param name="merged_pcd_name" value="$(arg merged_pcd_name)"/>
     </node>
 
 </launch>
