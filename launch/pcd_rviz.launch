@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<launch>
+    <arg name="pcd_file" value="$(find pcd_manage)/pcd_merged/bamboo_full_XYZ_0_15.pcd"/>
+
+    <node pkg="pcd_manage" type="pcd_rviz_node" name="pcd_rviz_node" args="$(arg pcd_file)"/>
+
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find pcd_manage)/rviz/pcd_rviz.rviz" />
+
+</launch>
