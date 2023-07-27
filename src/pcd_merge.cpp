@@ -58,18 +58,25 @@ int main(int argc, char *argv[])
     std::string package_name = "pcd_manage";
     std::string package_path = ros::package::getPath(package_name);
     std::string pcd_files_path = package_path + string("/pcd_raw/");
+    std::string pcd_save_addr = package_path + string("/pcd_merged/");
+    std::string merge_pcd_file_absaddr_ = pcd_save_addr + merge_pcd_file_name_;
+
     if (!(pDir = opendir(pcd_files_path.c_str())))
     {
         std::cout << "Folder doesn't Exist!" << std::endl;
         return -1;
     }
 
-    std::string pcd_save_addr = package_path + string("/pcd_merged/");
-    std::string merge_pcd_file_absaddr_ = pcd_save_addr + merge_pcd_file_name_;
-
-    while ((ptr = readdir(pDir)) != 0)
+    while ((ptr = readdir(pDir)) != nullptr)
     {
-        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
+        // 这部分代码的作用是在遍历目录时跳过当前目录和上级目录，以避免对它们进行处理。在UNIX-like系统中，每个目录都包含两个特殊的目录项：
+        // 当前目录（.）：表示目录本身。
+        // 上级目录（..）：表示目录的父目录。
+        if (strcmp(ptr->d_name, ".") == 0 && strcmp(ptr->d_name, "..") == 0)
+            continue;
+
+        std::string filename = ptr->d_name;
+        if (filename.length() >= 4 && filename.substr(filename.length() - 4) == ".pcd")
         {
             pcl::io::loadPCDFile(pcd_files_path + string(ptr->d_name), *cloud);
 
