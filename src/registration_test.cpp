@@ -26,7 +26,26 @@ std::pair<Eigen::Vector4f, Eigen::Vector4f> getCloudBoundingBox(const PointCloud
     return std::make_pair(min_bounds, max_bounds);
 }
 
-// 根据包围框自动生成重叠的切分区域
+/**
+ * @brief 根据点云包围框自动生成重叠的切分区域
+ *
+ * 基于输入点云的包围框，自动生成两个有重叠的子区域，用于配准测试。
+ * 通过控制重叠比例，可以调整两个区域的重叠程度。
+ *
+ * @param cloud 输入点云
+ * @param overlap_ratio 重叠比例，范围[0, 1]，默认0.3（30%重叠）
+ * @return 返回两个区域的边界框对：((min1, max1), (min2, max2))
+ *
+ * @note 切分策略：
+ *       - 区域1：从原点开始，覆盖 (0.5 + overlap_ratio/2) 的范围
+ *       - 区域2：从 (0.5 - overlap_ratio/2) 开始，覆盖到终点
+ *       - 重叠区域：中间 overlap_ratio 比例的区域
+ *
+ * @note Z轴处理：
+ *       - 区域1：使用完整的Z轴范围
+ *       - 区域2：使用完整的Z轴范围
+ *       - 保持高度信息的完整性
+ */
 std::pair<std::pair<Eigen::Vector4f, Eigen::Vector4f>, std::pair<Eigen::Vector4f, Eigen::Vector4f>>
 generateOverlapRegions(const PointCloudT::Ptr& cloud, float overlap_ratio = 0.3f)
 {
@@ -34,20 +53,22 @@ generateOverlapRegions(const PointCloudT::Ptr& cloud, float overlap_ratio = 0.3f
 
     float x_range = max_bounds[0] - min_bounds[0];
     float y_range = max_bounds[1] - min_bounds[1];
-    float z_range = max_bounds[2] - min_bounds[2];
 
-    // 计算重叠长度
-    float x_overlap = x_range * overlap_ratio;
-    float y_overlap = y_range * overlap_ratio;
+    // 计算分割点，确保有指定比例的重叠
+    float x_split_ratio = 0.5f + overlap_ratio / 2.0f; // 区域1的X轴结束比例
+    float y_split_ratio = 0.5f + overlap_ratio / 2.0f; // 区域1的Y轴结束比例
+
+    float x_start_ratio = 0.5f - overlap_ratio / 2.0f; // 区域2的X轴开始比例
+    float y_start_ratio = 0.5f - overlap_ratio / 2.0f; // 区域2的Y轴开始比例
 
     // 区域1：前半部分（在X和Y方向上）
     Eigen::Vector4f min_pt1 = min_bounds;
-    Eigen::Vector4f max_pt1(min_bounds[0] + x_range * 0.7f, min_bounds[1] + y_range * 0.7f,
-                            max_bounds[2], 1);
+    Eigen::Vector4f max_pt1(min_bounds[0] + x_range * x_split_ratio,
+                            min_bounds[1] + y_range * y_split_ratio, max_bounds[2], 1);
 
     // 区域2：后半部分（与区域1有重叠）
-    Eigen::Vector4f min_pt2(min_bounds[0] + x_range * 0.3f, min_bounds[1] + y_range * 0.3f,
-                            min_bounds[2], 1);
+    Eigen::Vector4f min_pt2(min_bounds[0] + x_range * x_start_ratio,
+                            min_bounds[1] + y_range * y_start_ratio, min_bounds[2], 1);
     Eigen::Vector4f max_pt2 = max_bounds;
 
     return std::make_pair(std::make_pair(min_pt1, max_pt1), std::make_pair(min_pt2, max_pt2));
@@ -314,16 +335,16 @@ void compareRegistrationMethodsAdvanced(const PointCloudT::Ptr& source,
         std::cout << std::string(40, '-') << "\n";
 
         // 方式1：测试扰动初始猜测的配准性能
-        testWithPerturbedInitialGuessAdvanced(source, target, method, name, 0.5f, 0.3f, 0.1f, 0.1f);
+        testWithPerturbedInitialGuessAdvanced(source, target, method, name, 0.5f, 0.3f, 0.5f, 0.1f);
 
         // 方式2：测试扰动源点云的配准性能
-        testWithPerturbedSourceCloudAdvanced(source, target, method, name, 0.5f, 0.3f, 0.1f, 0.1f);
+        testWithPerturbedSourceCloudAdvanced(source, target, method, name, 0.5f, 0.3f, 0.5f, 0.1f);
     }
 }
 
 int main()
 {
-    constexpr float overlap_ratio = 0.3f; // 30%重叠率
+    constexpr float overlap_ratio = 0.2f; // 20%重叠率
 
     // 1. 加载原始点云
     PointCloudT::Ptr cloud(new PointCloudT);
