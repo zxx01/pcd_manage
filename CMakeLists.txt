@@ -166,6 +166,13 @@ target_link_libraries(pcd_rviz_node
   ${PCL_LIBRARIES}
 )
 
+add_executable(pc_registration_node src/registration_test.cpp 
+  src/PointCloudRegistration/pointcloud_registration.cpp)
+target_link_libraries(pc_registration_node
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############

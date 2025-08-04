@@ -1,25 +1,26 @@
-#include <iostream>
-#include <string>
+
 #include <dirent.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <vector>
 
 #include <ros/package.h>
 #include <ros/ros.h>
 
 #include <pcl/common/common_headers.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     ros::init(argc, argv, "pcd_merge_node");
     ros::NodeHandle nh("~");
@@ -52,8 +53,8 @@ int main(int argc, char *argv[])
     // Create the filtering object
     pcl::PassThrough<pcl::PointXYZ> pass;
 
-    DIR *pDir;
-    struct dirent *ptr;
+    DIR* pDir;
+    struct dirent* ptr;
 
     std::string package_name = "pcd_manage";
     std::string package_path = ros::package::getPath(package_name);

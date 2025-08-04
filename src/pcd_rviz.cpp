@@ -1,19 +1,25 @@
+/*
+ * @Author: Xiaoxun Zhang
+ * @Date: 2025-08-04 19:43:59
+ * @LastEditTime: 2025-08-04 22:09:43
+ * @Description:
+ */
 
 #include <iostream>
 #include <string>
 
-#include <ros/ros.h>
 #include <ros/package.h>
+#include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl/filters/voxel_grid.h>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     ros::init(argc, argv, "pcl_rviz_node");
     ros::NodeHandle nh;
@@ -23,8 +29,9 @@ int main(int argc, char *argv[])
     sensor_msgs::PointCloud2 cloud_msg;
     ros::Publisher cloud_pub = nh.advertise<sensor_msgs::PointCloud2>("/full_cloud", 10);
 
-    // pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZINormal>());
-    // pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>());
+    // pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud(new
+    // pcl::PointCloud<pcl::PointXYZINormal>()); pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new
+    // pcl::PointCloud<pcl::PointXYZI>());
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
 
     if (pcl::io::loadPCDFile(pcd_file, *cloud) == -1)
